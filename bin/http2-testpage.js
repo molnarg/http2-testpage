@@ -25,6 +25,9 @@ var log = bunyan.createLogger({
   level: program.log
 });
 
+var key = fs.readFileSync(program.key);
+var crt = fs.readFileSync(program.crt);
+
 var validTestname = /^[a-z\-]+$/;
 
 function onRequest(req, res) {
@@ -38,9 +41,18 @@ function onRequest(req, res) {
     return;
   }
 
+  log.info({ test: test }, 'Incoming test request, creating test instance');
+
   // Creating the test server
-  var TestServer = require(testDir);
-  var instance = new TestServer();
+  var createTestServer = require(testDir);
+  var instance = createTestServer({
+    key: key,
+    cert: crt,
+    log: bunyan.createLogger({
+      name: test,
+      level: program.log
+    })
+  });
 
   // Allocating port
   var port = undefined;
@@ -54,8 +66,8 @@ function onRequest(req, res) {
   }
 
   // Redirecting the client to the new test instance
-  log.info({ test: test, instancePort: port }, 'Incoming test request');
+  log.info({ test: test, port: port }, 'Redirecting to the newly created test instance');
   res.statusCode = 307;
-  res.setHeader('location', 'http://localhost:' + port + '/');
+  res.setHeader('location', 'https://localhost:' + port + '/');
   res.end();
 }
