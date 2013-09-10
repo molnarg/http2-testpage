@@ -7,6 +7,7 @@ var http = require('http');
 var bunyan = require('bunyan');
 var spawn   = require('child_process').spawn;
 
+// Command line parsing
 var defaultKey = path.join(__dirname, '../keys/localhost.key');
 var defaultCrt = path.join(__dirname, '../keys/localhost.crt');
 
@@ -18,9 +19,7 @@ program
   .option('-p, --port [port]', 'Port to listen on [8080]', parseInt, 8080)
   .parse(process.argv);
 
-var server = http.createServer(onRequest);
-server.listen(program.port);
-
+// Initializing logging
 var logOutput = process.stdout;
 if (process.stdout.isTTY) {
   var bin = path.resolve(path.dirname(require.resolve('bunyan')), '..', 'bin', 'bunyan');
@@ -37,11 +36,16 @@ var log = bunyan.createLogger({
   level: program.log
 });
 
+// Importing key and cert
 var key = fs.readFileSync(program.key);
 var crt = fs.readFileSync(program.crt);
 
-var validTestname = /^[a-z\-]+$/;
+// Creating main server
+var server = http.createServer(onRequest);
+server.listen(program.port);
 
+// Handling of incoming requests to the main server
+var validTestname = /^[a-z\-]+$/;
 function onRequest(req, res) {
   var test = req.url.slice(1);
   var testDir = path.join(__dirname, '../test/', test);
