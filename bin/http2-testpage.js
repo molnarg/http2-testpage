@@ -6,6 +6,7 @@ var fs = require('fs');
 var http = require('http');
 var bunyan = require('bunyan');
 var spawn   = require('child_process').spawn;
+var http2 = require('http2');
 
 // Command line parsing
 var defaultKey = path.join(__dirname, '../keys/localhost.key');
@@ -33,6 +34,7 @@ if (process.stdout.isTTY) {
 var log = bunyan.createLogger({
   name: 'testpage',
   stream: logOutput,
+  serializers: http2.serializers,
   level: program.log
 });
 
@@ -67,6 +69,7 @@ function onRequest(req, res) {
     log: bunyan.createLogger({
       name: test,
       stream: logOutput,
+      serializers: http2.serializers,
       level: program.log
     })
   });
