@@ -3,7 +3,6 @@
 var program = require('commander');
 var path = require('path');
 var fs = require('fs');
-var http = require('http');
 var bunyan = require('bunyan');
 var spawn   = require('child_process').spawn;
 var http2 = require('http2');
@@ -43,7 +42,8 @@ var key = fs.readFileSync(program.key);
 var crt = fs.readFileSync(program.crt);
 
 // Creating main server
-var server = http.createServer(onRequest);
+var server = http2.createServer({ key: key, cert: crt });
+server.on('request', onRequest);
 server.listen(program.port);
 
 // Handling of incoming requests to the main server
