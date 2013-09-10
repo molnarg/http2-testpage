@@ -5,6 +5,7 @@ var path = require('path');
 var fs = require('fs');
 var http = require('http');
 var bunyan = require('bunyan');
+var spawn   = require('child_process').spawn;
 
 var defaultKey = path.join(__dirname, '../keys/localhost.key');
 var defaultCrt = path.join(__dirname, '../keys/localhost.crt');
@@ -20,8 +21,19 @@ program
 var server = http.createServer(onRequest);
 server.listen(program.port);
 
+var logOutput = process.stdout;
+if (process.stdout.isTTY) {
+  var bin = path.resolve(path.dirname(require.resolve('bunyan')), '..', 'bin', 'bunyan');
+  if(bin && fs.existsSync(bin)) {
+    logOutput = spawn(bin, ['-o', 'short'], {
+      stdio: [null, process.stdout, process.stderr]
+    }).stdin;
+  }
+}
+
 var log = bunyan.createLogger({
   name: 'testpage',
+  stream: logOutput,
   level: program.log
 });
 
@@ -50,6 +62,7 @@ function onRequest(req, res) {
     cert: crt,
     log: bunyan.createLogger({
       name: test,
+      stream: logOutput,
       level: program.log
     })
   });
