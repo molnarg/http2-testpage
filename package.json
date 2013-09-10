@@ -10,7 +10,8 @@
     "bunyan": "*",
     "commander": "*",
     "chai": "*",
-    "mocha": "*"
+    "mocha": "*",
+    "http2": ">=0.4.0"
   },
   "repository": {
     "type": "git",
