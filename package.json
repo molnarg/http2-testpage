@@ -1,0 +1,31 @@
+{
+  "name": "http2-testpage",
+  "version": "0.0.0",
+  "description": "A test server for testing client side HTTP/2 implementations",
+  "bin": "./bin/http2-testpage.js",
+  "engines" : {
+    "node" : ">=0.10.0"
+  },
+  "dependencies": {
+    "bunyan": "*",
+    "commander": "*",
+    "chai": "*",
+    "mocha": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/molnarg/http2-testpage.git"
+  },
+  "homepage": "https://github.com/molnarg/http2-testpage",
+  "bugs": {
+    "url": "https://github.com/molnarg/http2-testpage/issues"
+  },
+  "keywords": [
+    "http2",
+    "server",
+    "test"
+  ],
+  "author": "Gábor Molnár <gabor@molnar.es> (http://gabor.molnar.es)",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}
