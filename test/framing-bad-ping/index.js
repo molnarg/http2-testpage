@@ -28,6 +28,7 @@ module.exports = function(socket, log, callback) {
   });
 
   endpoint.on('peerError', function(error) {
+    clearTimeout(timeout);
     log.debug('Receiving GOAWAY frame');
     if (error === 'PROTOCOL_ERROR') {
       callback();
@@ -36,7 +37,8 @@ module.exports = function(socket, log, callback) {
     }
   });
 
-  setTimeout(function() {
+  var timeout = setTimeout(function() {
+    endpoint.close();
     callback('Timeout');
   }, 1000);
 };
