@@ -4,15 +4,24 @@ module.exports = function(socket, log, callback) {
   var endpoint = new http2.Endpoint('SERVER', {}, log);
   socket.pipe(endpoint).pipe(socket);
 
-  endpoint._serializer.write({
-    type: 'PING',
-    flags: {},
-    stream: 0,
-    data: new Buffer(10)
+  setImmediate(function() {
+    // After sending the connection header:
+    log.debug('Sending oversize PING frame');
+    endpoint._serializer.write({
+      type: 'PING',
+      flags: {},
+      stream: 0,
+      data: new Buffer(10)
+    });
   });
 
-  endpoint.on('peerError', function() {
-    callback();
+  endpoint.on('peerError', function(error) {
+    log.debug('Receiving GOAWAY frame');
+    if (error === 'PROTOCOL_ERROR') {
+      callback();
+    } else {
+      callback('Not appropriate error code: ' + error);
+    }
   });
 
   setTimeout(function() {
