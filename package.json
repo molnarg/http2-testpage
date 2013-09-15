@@ -1,6 +1,6 @@
 {
   "name": "http2-testpage",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A test server for testing client side HTTP/2 implementations",
   "bin": "./bin/http2-testpage.js",
   "engines" : {
@@ -9,9 +9,7 @@
   "dependencies": {
     "bunyan": "*",
     "commander": "*",
-    "chai": "*",
-    "mocha": "*",
-    "http2": ">=0.4.0"
+    "http2": ">=0.4.1"
   },
   "repository": {
     "type": "git",
