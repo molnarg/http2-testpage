@@ -1,20 +1,21 @@
 var http2 = require('http2');
 
-module.exports = function(options) {
-  var server = http2.createServer(options);
+module.exports = function(socket, log, callback) {
+  var endpoint = new http2.Endpoint('SERVER', {}, log);
+  socket.pipe(endpoint).pipe(socket);
 
-  server.on('request', function(req, res) {
-    res.end('Hello World!\n');
+  endpoint._serializer.write({
+    type: 'PING',
+    flags: {},
+    stream: 0,
+    data: new Buffer(10)
   });
 
-  server.on('connection', function(socket, endpoint) {
-    endpoint._serializer.write({
-      type: 'PING',
-      flags: {},
-      stream: 0,
-      data: new Buffer(10)
-    });
+  endpoint.on('peerError', function() {
+    callback();
   });
 
-  return server;
+  setTimeout(function() {
+    callback('Timeout');
+  }, 1000);
 };

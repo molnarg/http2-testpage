@@ -5,7 +5,10 @@ var path = require('path');
 var fs = require('fs');
 var bunyan = require('bunyan');
 var spawn   = require('child_process').spawn;
+var tls = require('tls');
 var http2 = require('http2');
+
+var implementedVersion = 'HTTP-draft-06/2.0';
 
 // Command line parsing
 var defaultKey = path.join(__dirname, '../keys/localhost.key');
@@ -30,12 +33,16 @@ if (process.stdout.isTTY) {
   }
 }
 
-var log = bunyan.createLogger({
-  name: 'testpage',
-  stream: logOutput,
-  serializers: http2.serializers,
-  level: program.log
-});
+function createLogger(name) {
+  return bunyan.createLogger({
+    name: name,
+    stream: logOutput,
+    serializers: http2.serializers,
+    level: program.log
+  });
+}
+
+var log = createLogger('testpage');
 
 // Importing key and cert
 var key = fs.readFileSync(program.key);
@@ -43,12 +50,10 @@ var crt = fs.readFileSync(program.crt);
 
 // Creating main server
 var server = http2.createServer({ key: key, cert: crt });
-server.on('request', onRequest);
-server.listen(program.port);
 
 // Handling of incoming requests to the main server
 var validTestname = /^[a-z\-]+$/;
-function onRequest(req, res) {
+server.on('request', function onRequest(req, res) {
   var test = req.url.slice(1);
   var testDir = path.join(__dirname, '../test/', test);
 
@@ -59,19 +64,10 @@ function onRequest(req, res) {
     return;
   }
 
-  log.info({ test: test }, 'Incoming test request, creating test instance');
-
-  // Creating the test server
-  var createTestServer = require(testDir);
-  var instance = createTestServer({
+  var testServer = tls.createServer({
     key: key,
     cert: crt,
-    log: bunyan.createLogger({
-      name: test,
-      stream: logOutput,
-      serializers: http2.serializers,
-      level: program.log
-    })
+    NPNProtocols: [implementedVersion]
   });
 
   // Allocating port
@@ -79,15 +75,46 @@ function onRequest(req, res) {
   while (!port) {
     try {
       port = 1024 + Math.floor(Math.random() * (65535 - 1024));
-      instance.listen(port);
+      testServer.listen(port);
     } catch (e) {
       port = undefined;
     }
   }
 
   // Redirecting the client to the new test instance
-  log.info({ test: test, port: port }, 'Redirecting to the newly created test instance');
+  log.info({ test: test, port: port }, 'Incoming test request; redirecting');
   res.statusCode = 307;
-  res.setHeader('location', 'https://localhost:' + port + '/');
+  res.setHeader('Location', 'https://localhost:' + port + '/');
   res.end();
-}
+
+  testServer.on('secureConnection', function(socket) {
+    testServer.close();
+
+    if (socket.npnProtocol !== implementedVersion) {
+      log.error({ test: test, port: port }, 'Couldn\'t negotiate HTTP/2 with TLS NPN, aborting');
+      socket.end();
+      return;
+    }
+
+    log.info({ test: test, port: port }, 'Starting test');
+
+    var startTest = require(testDir);
+
+    var done = false;
+    startTest(socket, createLogger(test), function(error) {
+      if (done) {
+        return;
+      }
+      done = true;
+
+      if (error) {
+        log.error({ test: test, port: port, error: error }, 'Error');
+      } else {
+        log.info({ test: test, port: port }, 'Success');
+      }
+    });
+  });
+});
+
+log.info({ port: program.port }, 'Waiting for incoming connections');
+server.listen(program.port);
