@@ -52,7 +52,7 @@ var crt = fs.readFileSync(program.crt);
 var server = http2.createServer({ key: key, cert: crt });
 
 // Handling of incoming requests to the main server
-var validTestname = /^[a-z\-]+$/;
+var validTestname = /^[a-z0-9\-]+$/;
 server.on('request', function onRequest(req, res) {
   var test = req.url.slice(1);
   var testDir = path.join(__dirname, '../test/', test);
