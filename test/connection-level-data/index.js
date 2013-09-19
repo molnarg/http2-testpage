@@ -26,7 +26,6 @@ module.exports = function(socket, log, callback, frame) {
   });
 
   endpoint.on('peerError', function(error) {
-    clearTimeout(timeout);
     log.debug('Receiving GOAWAY frame');
     if (error === 'PROTOCOL_ERROR') {
       callback();
@@ -34,9 +33,4 @@ module.exports = function(socket, log, callback, frame) {
       callback('Not appropriate error code: ' + error);
     }
   });
-
-  var timeout = setTimeout(function() {
-    endpoint.close();
-    callback('Timeout');
-  }, 1000);
 };

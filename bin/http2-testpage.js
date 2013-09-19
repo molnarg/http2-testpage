@@ -97,22 +97,22 @@ server.on('request', function onRequest(req, res) {
     }
 
     log.info({ test: test, port: port }, 'Starting test');
-
     var startTest = require(testDir);
+    startTest(socket, createLogger(test), evaluateResult);
+    setTimeout(evaluateResult.bind(null, 'timeout'), 2000);
 
     var done = false;
-    startTest(socket, createLogger(test), function(error) {
-      if (done) {
-        return;
+    function evaluateResult(error) {
+      if (!done) {
+        done = true;
+        if (error) {
+          log.error({ test: test, port: port, error: error }, 'Error');
+        } else {
+          log.info({ test: test, port: port }, 'Success');
+        }
+        socket.destroy();
       }
-      done = true;
-
-      if (error) {
-        log.error({ test: test, port: port, error: error }, 'Error');
-      } else {
-        log.info({ test: test, port: port }, 'Success');
-      }
-    });
+    }
   });
 });
 

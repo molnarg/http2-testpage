@@ -47,7 +47,6 @@ module.exports = function(socket, log, callback) {
   });
 
   endpoint.on('peerError', function(error) {
-    clearTimeout(timeout);
     log.debug('Receiving GOAWAY frame');
     if (error === 'FRAME_TOO_LARGE') {
       callback();
@@ -55,9 +54,4 @@ module.exports = function(socket, log, callback) {
       callback('Not appropriate error code: ' + error);
     }
   });
-
-  var timeout = setTimeout(function() {
-    endpoint.close();
-    callback('Timeout');
-  }, 1000);
 };
