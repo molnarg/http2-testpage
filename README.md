@@ -28,18 +28,29 @@ The only supported version of the standard is the
 How to use
 ----------
 
-You will need at least node version 0.10.0. Clone from git, and then install dependencies:
+You will need at least node version 0.10.0. Install http2-testpage using npm (the node package
+manager):
 
 ```bash
-$ git clone https://github.com/molnarg/http2-testpage.git
-$ cd http2-testpage
-$ npm install
+$ npm install -g http2-testpage
 ```
 
-Start the server:
+Use the `http2-testpage` executable:
 
 ```bash
-$ ./bin/http2-testpage.js
+$ http2-testpage -h
+
+  Usage: http2-testpage [options]
+
+  Options:
+
+    -h, --help         output usage information
+    -V, --version      output the version number
+    -l, --log [level]  Logging level [info]
+    -k, --key [path]   Private key to use [http2-testpage/keys/localhost.key]
+    -c, --crt [path]   Certificate to use [http2-testpage/keys/localhost.crt]
+    -p, --port [port]  Port to listen on [8080]
+
 ```
 
 Point your client software to the `https://localhost:8080/testname` URL, where `testname` is one of
