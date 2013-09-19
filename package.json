@@ -9,7 +9,7 @@
   "dependencies": {
     "bunyan": "*",
     "commander": "*",
-    "http2": ">=0.4.1"
+    "http2": ">=0.4.2"
   },
   "repository": {
     "type": "git",

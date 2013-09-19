@@ -22,7 +22,7 @@ var http2 = require('http2');
 var MAX_HTTP_PAYLOAD_SIZE = 16383;
 
 module.exports = function(socket, log, callback) {
-  var endpoint = new http2.Endpoint('SERVER', {}, log);
+  var endpoint = new http2.Endpoint(log, 'SERVER', {});
   socket.pipe(endpoint).pipe(socket);
 
   endpoint.on('stream', function(stream) {

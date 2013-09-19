@@ -6,7 +6,7 @@
 var http2 = require('http2');
 
 module.exports = function(socket, log, callback, frame) {
-  var endpoint = new http2.Endpoint('SERVER', {}, log);
+  var endpoint = new http2.Endpoint(log, 'SERVER', {});
   socket.pipe(endpoint).pipe(socket);
 
   endpoint.on('stream', function(stream) {
