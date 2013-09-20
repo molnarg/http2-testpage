@@ -22,7 +22,7 @@
 // This tests sends an promised stream ID that is in the peer's ID space. The peer should reset the
 // connection with PROTOCOL_ERROR.
 
-var invalidPromiseIdTest = require('../connection-invalid-promised-id-1');
+var invalidPromiseIdTest = require('../invalid-promised-id-1');
 
 module.exports = function(socket, log, callback) {
   invalidPromiseIdTest(socket, log, callback, [5]);

@@ -22,7 +22,7 @@
 // This tests sends a valid ID as promised ID, and then a numerically lower ID as the next promised
 // ID. The peer should reset the connection with PROTOCOL_ERROR.
 
-var invalidPromiseIdTest = require('../connection-invalid-promised-id-1');
+var invalidPromiseIdTest = require('../invalid-promised-id-1');
 
 module.exports = function(socket, log, callback) {
   invalidPromiseIdTest(socket, log, callback, [10, 8]);

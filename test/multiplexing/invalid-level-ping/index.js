@@ -5,7 +5,7 @@
 //     0x0, the recipient MUST respond with a connection error
 //     (Section 5.4.1) of type PROTOCOL_ERROR.
 
-var invalidStreamLevelFrameTest = require('../stream-level-goaway');
+var invalidStreamLevelFrameTest = require('../invalid-level-goaway');
 
 module.exports = function(socket, log, callback) {
   invalidStreamLevelFrameTest(socket, log, callback, {

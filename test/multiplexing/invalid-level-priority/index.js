@@ -4,7 +4,7 @@
 //     recipient MUST respond with a connection error (Section 5.4.1) of
 //     type PROTOCOL_ERROR.
 
-var invalidConnectionLevelFrameTest = require('../connection-level-data');
+var invalidConnectionLevelFrameTest = require('../invalid-level-data');
 
 module.exports = function(socket, log, callback) {
   invalidConnectionLevelFrameTest(socket, log, callback, {
