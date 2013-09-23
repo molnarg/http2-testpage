@@ -15,7 +15,7 @@ var defaultKey = path.join(__dirname, '../keys/localhost.key');
 var defaultCrt = path.join(__dirname, '../keys/localhost.crt');
 
 program
-  .version('0.0.0')
+  .version('0.2.0')
   .option('-l, --log [level]', 'Logging level [info]', 'info')
   .option('-k, --key [path]', 'Private key to use [http2-testpage/keys/localhost.key]', defaultKey)
   .option('-c, --crt [path]', 'Certificate to use [http2-testpage/keys/localhost.crt]', defaultCrt)
