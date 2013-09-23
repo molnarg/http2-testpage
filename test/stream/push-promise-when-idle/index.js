@@ -1,6 +1,6 @@
-// See ../invalid-frame-in-idle.js
+// See ../invalid-frame-when-idle.js
 
-var invalidFrameInIdleTest = require('../invalid-frame-in-idle');
+var invalidFrameWhenIdleTest = require('../invalid-frame-when-idle');
 
 module.exports = function(socket, log, callback) {
   invalidFrameInIdleTest(socket, log, callback, {
