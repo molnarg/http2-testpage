@@ -35,11 +35,13 @@
 
 var http2 = require('http2');
 
-module.exports = function(socket, log, callback, invalidFrame) {
+module.exports = function(socket, log, callback, generateInvalidFrame, desiredError) {
   var endpoint = new http2.Endpoint(log, 'SERVER', {}, { beforeCompression: beforeCompression });
   socket.pipe(endpoint).pipe(socket);
 
+  var originalStream;
   endpoint.on('stream', function(stream) {
+    originalStream = stream;
     stream.headers({
       ':status': 200
     });
@@ -58,14 +60,14 @@ module.exports = function(socket, log, callback, invalidFrame) {
   function beforeCompression(frame, forward, done) {
     forward(frame);
     if (frame.flags.END_STREAM) {
-      invalidFrame.stream = frame.stream;
-      forward(invalidFrame);
+      forward(generateInvalidFrame(frame.stream, originalStream.id));
     }
     done();
   }
 
+  desiredError = desiredError || 'STREAM_CLOSED';
   endpoint.on('peerError', function(error) {
-    if (error === 'STREAM_CLOSED') {
+    if (error === desiredError) {
       callback();
     } else {
       callback('Not appropriate error code: ' + error);

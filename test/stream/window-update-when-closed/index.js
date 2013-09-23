@@ -3,9 +3,12 @@
 var invalidFrameWhenClosedTest = require('../invalid-frame-when-closed');
 
 module.exports = function(socket, log, callback) {
-  invalidFrameWhenClosedTest(socket, log, callback, {
-    type: 'WINDOW_UPDATE',
-    flags: {},
-    window_size: 10
+  invalidFrameWhenClosedTest(socket, log, callback, function(stream) {
+    return {
+      type: 'WINDOW_UPDATE',
+      flags: {},
+      stream: stream,
+      window_size: 10
+    };
   });
 };

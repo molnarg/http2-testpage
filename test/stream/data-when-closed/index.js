@@ -3,9 +3,12 @@
 var invalidFrameWhenClosedTest = require('../invalid-frame-when-closed');
 
 module.exports = function(socket, log, callback) {
-  invalidFrameWhenClosedTest(socket, log, callback, {
-    type: 'DATA',
-    flags: {},
-    data: new Buffer(10)
+  invalidFrameWhenClosedTest(socket, log, callback, function(stream) {
+    return {
+      type: 'DATA',
+      flags: {},
+      stream: stream,
+      data: new Buffer(10)
+    };
   });
 };

@@ -21,7 +21,7 @@
 
 var http2 = require('http2');
 
-module.exports = function(socket, log, callback, invalidFrame) {
+module.exports = function(socket, log, callback, generateInvalidFrame) {
   var endpoint = new http2.Endpoint(log, 'SERVER', {}, { beforeCompression: beforeCompression });
   socket.pipe(endpoint).pipe(socket);
 
@@ -40,8 +40,7 @@ module.exports = function(socket, log, callback, invalidFrame) {
   function beforeCompression(frame, forward, done) {
     forward(frame);
     if (frame.type === 'PUSH_PROMISE') {
-      invalidFrame.stream = frame.promised_stream;
-      forward(invalidFrame);
+      forward(generateInvalidFrame(frame.promised_stream, frame.stream));
     }
     done();
   }
